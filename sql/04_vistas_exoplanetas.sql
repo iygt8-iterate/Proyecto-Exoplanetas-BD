@@ -1,7 +1,7 @@
 -- CS2041 | Mapeo y deteccion de exoplanetas
 -- Vistas de usuario
 
--- Vista 1: catalogo de exoplanetas con informacion de la estrella an
+-- Vista 1. Catalogo de exoplanetas
 CREATE OR REPLACE VIEW public.vw_catalogo_exoplanetas AS
 SELECT
     p.id_exoplaneta,
@@ -16,7 +16,7 @@ SELECT
 FROM public.exoplaneta AS p
 JOIN public.estrella AS s ON s.id_estrella = p.id_estrella;
 
--- Vista 2: observaciones y sus instrumentos, estrella y mision (opci
+-- Vista 2. Detalle de observaciones
 CREATE OR REPLACE VIEW public.vw_observaciones_detalle AS
 SELECT
     o.id_observacion,
@@ -33,7 +33,7 @@ FROM public.observacion AS o
 JOIN public.telescopio AS t ON t.nombre = o.nombre_telescopio
 JOIN public.estrella AS s ON s.id_estrella = o.id_estrella;
 
--- Vista 3: eventos de transito con sus observaciones, exoplanetas y
+-- Vista 3. Detalle de eventos de transito
 CREATE OR REPLACE VIEW public.vw_eventos_transito_detalle AS
 SELECT
     e.id_observacion,
