@@ -1,13 +1,8 @@
--- CS2041 - Hito 2 - Etapa 2: carga inicial de datos sinteticos
--- Proyecto: Mapeo y Deteccion de Exoplanetas
--- EJECUTAR SOLO en exoplanetas_bd, DESPUES de 01_creacion_exoplanetas.sql
--- Prueba inicial: 1 000 observaciones y 1 000 eventos de transito.
--- Todos los registros de este script son SINTETICOS; no representan datos reales de NASA.
--- No elimina datos. ON CONFLICT permite ejecutarlo nuevamente sin duplicar claves.
+-- CS2041 | Mapeo y deteccion de exoplanetas
+-- Carga inicial de datos
 
 BEGIN;
 
--- 1. Misiones (4) y telescopios (6): entidades referenciadas por otras tablas.
 INSERT INTO public.mision_espacial
     (nombre, agencia, fecha_inicio, fecha_fin, objetivo, estado)
 SELECT
@@ -32,7 +27,6 @@ SELECT
 FROM generate_series(1, 6) AS s(g)
 ON CONFLICT DO NOTHING;
 
--- 2. Estrellas (200) y exoplanetas (400 = 2 por estrella).
 INSERT INTO public.estrella
     (id_estrella, nombre, declinacion, distancia, ascension_recta, radio, masa, tipo_espectral)
 SELECT
@@ -60,7 +54,6 @@ SELECT
 FROM generate_series(1, 400) AS s(g)
 ON CONFLICT DO NOTHING;
 
--- 3. Miembros de mision (20) y relaciones de uso de telescopio (20).
 INSERT INTO public.miembro_mision
     (nombre_mision, nro_miembro, nombre, rol, especialidad, correo)
 SELECT
@@ -83,8 +76,6 @@ FROM generate_series(1, 4) AS mis(m)
 CROSS JOIN generate_series(1, 5) AS miem(n)
 ON CONFLICT DO NOTHING;
 
--- 4. Observaciones (1 000). Cada observacion referencia estrella y telescopio existentes.
--- Algunas observaciones no pertenecen a ninguna mision, tal como permite el Hito 1.
 INSERT INTO public.observacion
     (id_observacion, fecha, duracion, filtro, metodo,
      nombre_mision, nombre_telescopio, id_estrella)
@@ -101,7 +92,6 @@ SELECT
 FROM generate_series(1, 1000) AS s(g)
 ON CONFLICT DO NOTHING;
 
--- 5. Eventos (1 000). El exoplaneta elegido pertenece a la MISMA estrella observada.
 INSERT INTO public.evento_transito
     (id_observacion, nro_evento, fecha_inicio, duracion,
      profundidad, snr, metodo_deteccion, id_exoplaneta)
@@ -120,14 +110,12 @@ ON CONFLICT DO NOTHING;
 
 COMMIT;
 
--- VERIFICACION B: debe dar 0 incoherencias entre estrella observada y exoplaneta.
 SELECT count(*) AS incoherencias_estrella_exoplaneta
 FROM public.evento_transito AS e
 JOIN public.observacion AS o ON o.id_observacion = e.id_observacion
 JOIN public.exoplaneta AS p ON p.id_exoplaneta = e.id_exoplaneta
 WHERE o.id_estrella <> p.id_estrella;
 
--- VERIFICACION A: debe haber 8 filas con las cantidades indicadas.
 SELECT 'mision_espacial' AS tabla, count(*) AS registros FROM public.mision_espacial
 UNION ALL SELECT 'telescopio', count(*) FROM public.telescopio
 UNION ALL SELECT 'estrella', count(*) FROM public.estrella
