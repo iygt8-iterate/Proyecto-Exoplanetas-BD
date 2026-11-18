@@ -1,11 +1,9 @@
--- CS2041 Base de Datos I - Hito 2 - Apartado 4.5 Procedimientos almacenados
--- Ejecutar SOLO en exoplanetas_bd (PostgreSQL).
--- Requiere las 8 tablas del script 01. Puede ejecutarse nuevamente (CREATE OR REPLACE).
--- Crea 3 procedimientos y prueba su funcionamiento sin dejar filas de prueba.
+-- CS2041 | Mapeo y deteccion de exoplanetas
+-- Procedimientos almacenados
 
 BEGIN;
 
--- 1) Registrar una observacion con las referencias definidas en el Hito 1.
+-- 1) Registrar una observacion con las referencias definidas en el H
 CREATE OR REPLACE PROCEDURE public.registrar_observacion(
     p_id_observacion INTEGER,
     p_fecha DATE,
@@ -30,12 +28,10 @@ BEGIN
         p_id_observacion, p_fecha, p_duracion, p_filtro, p_metodo,
         p_nombre_mision, p_nombre_telescopio, p_id_estrella
     );
-    -- Las FK de la tabla validan estrella, telescopio y mision.
 END;
 $$;
 
--- 2) Registrar un transito. Ademas de las FK, se valida la coherencia astronómica:
---    el exoplaneta debe pertenecer a la estrella objeto de la observacion.
+-- 2) Registrar un transito
 CREATE OR REPLACE PROCEDURE public.registrar_evento_transito(
     p_id_observacion INTEGER,
     p_nro_evento INTEGER,
@@ -83,7 +79,7 @@ BEGIN
 END;
 $$;
 
--- 3) Actualizar el estado de un exoplaneta existente.
+-- 3) Actualizar el estado de un exoplaneta existente
 CREATE OR REPLACE PROCEDURE public.actualizar_estado_exoplaneta(
     p_id_exoplaneta INTEGER,
     p_estado TEXT
@@ -107,8 +103,6 @@ $$;
 
 COMMIT;
 
--- PRUEBA DE FUNCIONAMIENTO: se ejecutan los 3 procedimientos y se deshacen
--- los cambios de prueba con ROLLBACK. Las DEFINICIONES quedan guardadas.
 BEGIN;
 DO $$
 DECLARE
@@ -155,7 +149,6 @@ END;
 $$;
 ROLLBACK;
 
--- VERIFICACION FINAL: deben aparecer 3 procedimientos.
 SELECT p.proname AS procedimiento
 FROM pg_catalog.pg_proc p
 JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
