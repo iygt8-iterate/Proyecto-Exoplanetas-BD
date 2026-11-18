@@ -1,14 +1,7 @@
--- UTEC / CS2041 / Hito 2 / Seccion 5 - Experimentacion de 10K
--- Este script NO genera nuevos datos ni cambia las 8 tablas del proyecto.
--- Requiere: restaurar exoplanetas_10k.backup en base nueva exoplanetas_exp_10k.
--- Genera 5 consultas x 2 escenarios x 3 repeticiones = 30 mediciones reales.
--- Los indices candidatos se crean, se prueban y SE ELIMINAN al finalizar.
--- Las mediciones se guardan en public.resultados_hito2 y se muestran al final.
--- IMPORTANTE: exporta el resultado a CSV desde pgAdmin para usarlo en LaTeX.
+-- CS2041 | Mapeo y deteccion de exoplanetas
+-- Experimentacion: 10 000 registros
 
 BEGIN;
-
--- Evita medir por accidente otra base o un tamano distinto.
 DO $$
 DECLARE
   n_obs BIGINT;
@@ -23,9 +16,6 @@ BEGIN
   IF n_obs <> 10000 OR n_evt <> 10000 THEN
     RAISE EXCEPTION 'Se requiere escala 10K: hay % observaciones y % eventos', n_obs, n_evt;
   END IF;
-
-  -- Las claves primarias SI conservan sus indices obligatorios.
-  -- Este experimento compara ausencia/presencia de indices SECUNDARIOS candidatos.
   SELECT count(*) INTO n_indices
   FROM pg_catalog.pg_index AS i
   JOIN pg_catalog.pg_class AS t ON t.oid = i.indrelid
@@ -38,7 +28,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 CREATE TABLE IF NOT EXISTS public.resultados_hito2 (
   escala INTEGER NOT NULL,
   consulta TEXT NOT NULL,
@@ -48,14 +37,10 @@ CREATE TABLE IF NOT EXISTS public.resultados_hito2 (
   plan_json JSONB NOT NULL,
   PRIMARY KEY (escala,consulta,escenario,repeticion)
 );
-
--- En una repeticion del script, sustituye SOLO las mediciones de 10K.
 DELETE FROM public.resultados_hito2 WHERE escala = 10000;
-
 ANALYZE public.observacion;
 ANALYZE public.evento_transito;
-
--- Fase A: 5 consultas con indices de clave primaria, SIN indices candidatos.
+-- Escenario sin indices secundarios
 DO $$
 DECLARE
   q TEXT;
@@ -71,7 +56,6 @@ DECLARE
   ];
 BEGIN
   FOREACH q IN ARRAY qlist LOOP
-    -- Calentamiento no contabilizado para reducir sesgo por cache fria.
     EXECUTE format('EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT * FROM public.%I', q)
       INTO v_plan_txt;
     FOR r IN 1..3 LOOP
@@ -87,8 +71,7 @@ BEGIN
   END LOOP;
 END;
 $$;
-
--- Fase B: indices candidatos, elegidos por los filtros/joins de Q1-Q5.
+-- Indices secundarios candidatos
 CREATE INDEX idx_h2_q1_observacion_estrella_fecha
   ON public.observacion (id_estrella, fecha) INCLUDE (duracion);
 CREATE INDEX idx_h2_q2_evento_snr_profundidad
@@ -100,10 +83,8 @@ CREATE INDEX idx_h2_q4_evento_fecha_planeta
   INCLUDE (profundidad, snr) WHERE profundidad >= 0.0050;
 CREATE INDEX idx_h2_q5_observacion_telescopio_duracion
   ON public.observacion (nombre_telescopio, duracion) INCLUDE (id_estrella);
-
 ANALYZE public.observacion;
 ANALYZE public.evento_transito;
-
 DO $$
 DECLARE
   q TEXT;
@@ -134,20 +115,13 @@ BEGIN
   END LOOP;
 END;
 $$;
-
--- Retiramos los indices candidatos: queda igual el esquema previo,
--- salvo por la tabla de mediciones. Los indices PK no se tocan.
 DROP INDEX public.idx_h2_q1_observacion_estrella_fecha;
 DROP INDEX public.idx_h2_q2_evento_snr_profundidad;
 DROP INDEX public.idx_h2_q3_observacion_mision_fecha;
 DROP INDEX public.idx_h2_q4_evento_fecha_planeta;
 DROP INDEX public.idx_h2_q5_observacion_telescopio_duracion;
-
 COMMIT;
-
--- RESULTADO FINAL: 5 filas. Tiempos reales de PostgreSQL en MILISEGUNDOS.
--- Un resultado negativo en "mejora_pct" significa que el conjunto de indices
--- fue PEOR para esa consulta; tambien es un resultado valido a discutir.
+-- Resumen de mediciones
 SELECT
     consulta,
     ROUND(AVG(tiempo_ms) FILTER (WHERE escenario = 'sin_indices'),3) AS sin_indices_ms,
