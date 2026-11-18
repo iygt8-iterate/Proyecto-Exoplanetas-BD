@@ -1,0 +1,6 @@
+escala,consulta,sin_indices_secundarios_ms,con_indices_secundarios_ms,mejora_porcentual,repeticiones_por_escenario,mediciones_por_consulta
+1M,Q1,111.315,32.863,70.48,3,6
+1M,Q2,273.957,149.081,45.58,3,6
+1M,Q3,440.818,271.124,38.50,3,6
+1M,Q4,204.436,128.130,37.33,3,6
+1M,Q5,350.859,132.426,62.26,3,6
