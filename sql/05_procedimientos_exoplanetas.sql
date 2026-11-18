@@ -3,7 +3,7 @@
 
 BEGIN;
 
--- 1) Registrar una observacion con las referencias definidas en el H
+-- Procedimiento 1. Registro de observaciones
 CREATE OR REPLACE PROCEDURE public.registrar_observacion(
     p_id_observacion INTEGER,
     p_fecha DATE,
@@ -31,7 +31,7 @@ BEGIN
 END;
 $$;
 
--- 2) Registrar un transito
+-- Procedimiento 2. Registro de transitos
 CREATE OR REPLACE PROCEDURE public.registrar_evento_transito(
     p_id_observacion INTEGER,
     p_nro_evento INTEGER,
@@ -79,7 +79,7 @@ BEGIN
 END;
 $$;
 
--- 3) Actualizar el estado de un exoplaneta existente
+-- Procedimiento 3. Actualizacion de estados
 CREATE OR REPLACE PROCEDURE public.actualizar_estado_exoplaneta(
     p_id_exoplaneta INTEGER,
     p_estado TEXT
