@@ -1,51 +1,57 @@
-# Proyecto-Exoplanetas-BD
+# Mapeo y Detección de Exoplanetas
 
 **CS2041 — Bases de Datos I · UTEC · 2026-II**  
-**Proyecto:** Mapeo y Detección de Exoplanetas · PostgreSQL
+**Sistema gestor:** PostgreSQL
 
-Implementación académica de una base relacional de estrellas, exoplanetas, observaciones, eventos de tránsito, telescopios y misiones espaciales.
+Proyecto de diseño, implementación y evaluación de una base de datos relacional para el registro de estrellas anfitrionas, exoplanetas, telescopios, observaciones, eventos de tránsito y misiones espaciales.
 
-## Estructura
+## Componentes
 
-- `sql/`: scripts SQL originales, numerados según su desarrollo.
-- `experimentos/`: espacio para resultados CSV y análisis de rendimiento.
-- `informe/`: espacio para el informe final en LaTeX.
-- `evidencias/`: espacio para capturas y enlaces de demostración.
+El modelo incluye ocho tablas relacionales, restricciones de integridad, tres vistas de usuario, tres procedimientos almacenados, tres triggers y cinco vistas de consulta destinadas a la experimentación.
 
-## Orden de scripts
+## Organización
 
-| Script | Función |
+| Directorio | Contenido |
 |---|---|
-| 01 | Creación de tablas y restricciones |
-| 02 | Carga sintética inicial |
-| 03 | Simulación de datos faltantes |
-| 04 | Vistas |
-| 05 | Procedimientos almacenados |
-| 06 | Triggers |
-| 07 | Cinco consultas intermedias |
-| 08 | Escalamiento hasta 10K |
-| 09 | Escalamiento hasta 100K |
-| 10 | Experimento de 100K |
-| 11 | Experimento de 1K |
-| 12 | Experimento de 10K |
-| 13 | Escalamiento hasta 1M (pendiente de verificar ejecución) |
+| `sql/` | Definición, implementación, carga y experimentación |
+| `experimentos/` | Resultados estadísticos y planes de ejecución |
+| `informe/` | Documentación académica en LaTeX |
+| `evidencias/` | Evidencia gráfica y audiovisual |
 
-Los archivos se encuentran en `sql/` y conservan sus nombres originales.
+## Scripts SQL
+
+| Archivo | Descripción |
+|---|---|
+| `01_creacion_exoplanetas.sql` | Esquema relacional y restricciones |
+| `02_carga_datos_prueba_exoplanetas.sql` | Datos sintéticos iniciales |
+| `03_simulacion_datos_faltantes_exoplanetas.sql` | Simulación de valores NULL |
+| `04_vistas_exoplanetas.sql` | Vistas de usuario |
+| `05_procedimientos_exoplanetas.sql` | Procedimientos almacenados |
+| `06_triggers_exoplanetas.sql` | Triggers de integridad |
+| `07_consultas_intermedias_exoplanetas.sql` | Consultas Q1–Q5 |
+| `08_escalar_a_10k_exoplanetas.sql` | Escalamiento a 10 000 |
+| `09_escalar_a_100k_exoplanetas.sql` | Escalamiento a 100 000 |
+| `10_experimento_100k_exoplanetas.sql` | Medición de 100 000 |
+| `11_experimento_1k_exoplanetas.sql` | Medición de 1 000 |
+| `12_experimento_10k_exoplanetas.sql` | Medición de 10 000 |
+| `13_escalar_a_1M_exoplanetas.sql` | Escalamiento a 1 000 000 |
+| `14_experimento_1M_exoplanetas.sql` | Medición de 1 000 000 |
+| `15_verificacion_visual_1M_exoplanetas.sql` | Verificación comparativa de planes en 1M |
+
+## Experimentación
+
+Se consideran cuatro escalas: 1 000, 10 000, 100 000 y 1 000 000 registros en **cada una** de las tablas `observacion` y `evento_transito`. La comparación evalúa cinco consultas con y sin índices secundarios candidatos, conservando los índices estructurales de las claves primarias.
+
+Los scripts de medición emplean `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` y registran los tiempos y planes en `public.resultados_hito2`. El script 15 documenta la comparación visual en la escala de 1M mediante una transacción revertida al concluir.
+
+Los datos de prueba son sintéticos y no corresponden a un catálogo observacional real.
 
 ## Reproducción
 
-1. Preparar una base PostgreSQL vacía denominada `exoplanetas_bd`.
-2. Ejecutar los scripts 01–07 en orden. Revisar cada script antes de volver a ejecutarlo: no todos son idempotentes.
-3. Generar y respaldar cada escala con 08 y 09, partiendo de la anterior.
-4. Ejecutar los experimentos 1K y 10K sobre bases restauradas independientes; el experimento 100K sobre la base de 100K.
-5. Ejecutar 13 **una sola vez** sobre la base principal de 100K, después de verificar sus condiciones iniciales.
+La implementación utiliza `exoplanetas_bd` como base principal. Los scripts 01–09 establecen el esquema y las tres primeras escalas; las experimentaciones de 1K y 10K emplean bases restauradas independientes. La carga de 1M parte del escenario de 100K.
 
-**Nota:** 1K, 10K, 100K y 1M se refieren a la cantidad de filas de cada una de las tablas `observacion` y `evento_transito`, no al total de filas de toda la base. Los índices de claves primarias permanecen presentes en los experimentos; se compara la adición de índices secundarios.
+Los scripts de escalamiento y medición comprueban la base y el volumen antes de operar. Los índices candidatos de los experimentos automáticos se retiran al concluir cada medición.
 
-## Material pendiente
+## Artefactos complementarios
 
-- CSV originales de 1K, 10K y 100K, aún no recuperados de la laptop.
-- Resultados y planes del millón, una vez ejecutados y verificados.
-- Informe LaTeX, capturas y enlaces reales a videos.
-
-Los respaldos `.backup`, credenciales y videos pesados deben permanecer fuera del repositorio. Los datos de prueba son sintéticos.
+Los respaldos `.backup`, las grabaciones y los datos de acceso al servidor se distribuyen por separado del código fuente.
