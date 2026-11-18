@@ -1,6 +1,6 @@
 -- UTEC / CS2041 / Hito 2 / Seccion 5 - Experimentacion de 1M
 -- Este script NO genera nuevos datos ni cambia las 8 tablas del proyecto.
--- Requiere: scripts 01-09 ejecutados y backup exoplanetas_100k.backup ya guardado.
+-- Requiere: scripts 01-13 ejecutados, escala 1M verificada y backup exoplanetas_1M.backup ya guardado.
 -- Genera 5 consultas x 2 escenarios x 3 repeticiones = 30 mediciones reales.
 -- Los indices candidatos se crean, se prueban y SE ELIMINAN al finalizar.
 -- Las mediciones se guardan en public.resultados_hito2 y se muestran al final.
