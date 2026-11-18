@@ -1,3 +1,3 @@
-# Evidencias
+# Evidencias de experimentación
 
-Pendiente: incorporar capturas auténticas y enlaces a videos reales. No incluir grabaciones pesadas en Git.
+Material gráfico y referencias audiovisuales de la ejecución de consultas y comparación de índices en la escala de un millón de registros.
