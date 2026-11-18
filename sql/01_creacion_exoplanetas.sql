@@ -1,7 +1,5 @@
--- CS2041 Bases de Datos I - Hito 2
--- Implementacion del modelo relacional del Hito 1 (Mapeo y Deteccion de Exoplanetas)
--- Ejecutar UNICAMENTE en la base de datos exoplanetas_bd.
--- No crea ni elimina otras bases de datos. No borra tablas existentes.
+-- CS2041 | Mapeo y deteccion de exoplanetas
+-- Esquema relacional
 
 BEGIN;
 
@@ -117,7 +115,6 @@ CREATE TABLE public.utiliza (
 
 COMMIT;
 
--- Verificacion: deben aparecer exactamente 8 filas.
 SELECT table_name AS tabla_creada
 FROM information_schema.tables
 WHERE table_schema = 'public'
