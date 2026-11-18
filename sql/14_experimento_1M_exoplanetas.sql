@@ -1,4 +1,6 @@
 -- UTEC / CS2041 / Hito 2 / Seccion 5 - Experimentacion de 1M
+-- SCRIPT AUTOMATICO DE MEDICIONES PARA EL INFORME (NO ES EL GUION PARA GRABAR).
+-- Para la demostracion visual en un solo video, usar 15_verificacion_visual_1M_exoplanetas.sql.
 -- Este script NO genera nuevos datos ni cambia las 8 tablas del proyecto.
 -- Requiere: scripts 01-13 ejecutados, escala 1M verificada y backup exoplanetas_1M.backup ya guardado.
 -- Genera 5 consultas x 2 escenarios x 3 repeticiones = 30 mediciones reales.
