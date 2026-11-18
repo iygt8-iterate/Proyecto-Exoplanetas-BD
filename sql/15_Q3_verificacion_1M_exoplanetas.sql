@@ -1,27 +1,24 @@
 -- CS2041 | Mapeo y deteccion de exoplanetas
--- Q3. Actividad de mision | Escala 1 000 000
+-- Q3 | Actividad de mision | 1 000 000 de registros
 
--- Validacion de escala
+-- 1. Escenario inicial
 SELECT current_database() AS base,
        (SELECT COUNT(*) FROM public.observacion) AS observaciones,
-       (SELECT COUNT(*) FROM public.evento_transito) AS eventos_transito;
+       (SELECT COUNT(*) FROM public.evento_transito) AS eventos_transito,
+       (SELECT COUNT(*)
+   FROM pg_catalog.pg_index AS i
+   JOIN pg_catalog.pg_class AS t ON t.oid = i.indrelid
+   JOIN pg_catalog.pg_namespace AS n ON n.oid = t.relnamespace
+   WHERE n.nspname = 'public'
+     AND t.relname IN ('observacion', 'evento_transito')
+     AND NOT i.indisprimary) AS indices_secundarios;
 
--- Estado de indices
-SELECT COUNT(*) AS indices_secundarios
-FROM pg_catalog.pg_index AS i
-JOIN pg_catalog.pg_class AS t ON t.oid = i.indrelid
-JOIN pg_catalog.pg_namespace AS n ON n.oid = t.relnamespace
-WHERE n.nspname = 'public'
-  AND t.relname IN ('observacion', 'evento_transito')
-  AND NOT i.indisprimary;
-
--- Inicio de comparacion
+-- 2. Consulta sin indices secundarios
 BEGIN;
-
--- Q3. Sin indices secundarios candidatos
+EXPLAIN (ANALYZE, BUFFERS)
 SELECT * FROM public.exp_q03_actividad_mision;
 
--- Indices secundarios candidatos
+-- 3. Implementacion de indices candidatos
 CREATE INDEX idx_h2_q1_observacion_estrella_fecha
   ON public.observacion (id_estrella, fecha) INCLUDE (duracion);
 CREATE INDEX idx_h2_q2_evento_snr_profundidad
@@ -36,17 +33,16 @@ CREATE INDEX idx_h2_q5_observacion_telescopio_duracion
 ANALYZE public.observacion;
 ANALYZE public.evento_transito;
 
--- Q3. Con indices secundarios candidatos
+-- 4. Consulta con indices secundarios
+EXPLAIN (ANALYZE, BUFFERS)
 SELECT * FROM public.exp_q03_actividad_mision;
 
--- Reversion
+-- 5. Restauracion del escenario original
 ROLLBACK;
-
--- Estado final de indices
-SELECT COUNT(*) AS indices_secundarios
-FROM pg_catalog.pg_index AS i
-JOIN pg_catalog.pg_class AS t ON t.oid = i.indrelid
-JOIN pg_catalog.pg_namespace AS n ON n.oid = t.relnamespace
-WHERE n.nspname = 'public'
-  AND t.relname IN ('observacion', 'evento_transito')
-  AND NOT i.indisprimary;
+SELECT (SELECT COUNT(*)
+   FROM pg_catalog.pg_index AS i
+   JOIN pg_catalog.pg_class AS t ON t.oid = i.indrelid
+   JOIN pg_catalog.pg_namespace AS n ON n.oid = t.relnamespace
+   WHERE n.nspname = 'public'
+     AND t.relname IN ('observacion', 'evento_transito')
+     AND NOT i.indisprimary) AS indices_secundarios_finales;

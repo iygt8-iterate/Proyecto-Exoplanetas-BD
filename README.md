@@ -47,9 +47,21 @@ El modelo incluye ocho tablas relacionales, restricciones de integridad, tres vi
 
 Se consideran cuatro escalas: 1 000, 10 000, 100 000 y 1 000 000 registros en **cada una** de las tablas `observacion` y `evento_transito`. La comparación evalúa cinco consultas con y sin índices secundarios candidatos, conservando los índices estructurales de las claves primarias.
 
-Los scripts de medición emplean `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` y registran los tiempos y planes en `public.resultados_hito2`. Las cinco variantes del script 15 documentan, individualmente, la comparación visual en la escala de 1M. Cada una utiliza el mismo conjunto de índices candidatos que la medición automática y revierte la transacción al concluir.
+Los scripts de medición emplean `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` y registran los tiempos y planes en `public.resultados_hito2`. Las cinco variantes del script 15 documentan la comparación visual en la escala de 1M, con un video por consulta. Los resultados se muestran en pgAdmin con `EXPLAIN (ANALYZE, BUFFERS)` ejecutado como SQL. Cada archivo utiliza los cinco índices candidatos de la experimentación automática y revierte los cambios con `ROLLBACK`.
 
 Los datos de prueba son sintéticos y no corresponden a un catálogo observacional real.
+
+## Evidencia de las cinco consultas
+
+Cada archivo `15_Q1` a `15_Q5` contiene cinco etapas: verificación inicial, escenario sin índices, creación de índices y actualización estadística, escenario con índices y reversión final. En pgAdmin se ejecutan por selección de bloques, en orden, sin ejecutar el archivo entero.
+
+1. Ejecutar la consulta de verificación y comprobar 1M/1M y cero índices secundarios.
+2. Ejecutar `BEGIN;` y el primer `EXPLAIN (ANALYZE, BUFFERS)` sobre la consulta correspondiente.
+3. Ejecutar los cinco `CREATE INDEX` y los dos `ANALYZE` como un solo bloque.
+4. Ejecutar el segundo `EXPLAIN (ANALYZE, BUFFERS)` y mostrar el plan y el tiempo.
+5. Ejecutar `ROLLBACK;` y verificar que el conteo de índices secundarios vuelva a cero.
+
+Una grabación independiente por consulta. El script `14_experimento_1M_exoplanetas.sql` permanece sin cambios, como registro de las 30 mediciones automáticas.
 
 ## Reproducción
 
