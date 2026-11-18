@@ -1,0 +1,13 @@
+*.backup
+*.dump
+*.bak
+*.mp4
+*.mkv
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.aux
+*.log
+*.synctex.gz
