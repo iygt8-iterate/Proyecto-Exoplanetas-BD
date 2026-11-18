@@ -1,15 +1,7 @@
--- CS2041 Bases de Datos I | Hito 2 | Preparacion para experimentos
--- Escenario 10K: exactamente 10 000 OBSERVACIONES y 10 000 EVENTOS DE TRANSITO.
--- Datos 100% SINTETICOS, basados en el esquema de Andre (Hito 1).
--- IMPORTANTE: guardar ANTES el dump de 1K mediante Backup en pgAdmin.
--- EJECUTAR SOLO sobre exoplanetas_bd, despues de los scripts 01 a 07.
--- Seguro para repetir: las claves existentes no se duplican.
--- Mantiene los triggers de integridad ACTIVADOS y no elimina registros.
+-- CS2041 | Mapeo y deteccion de exoplanetas
+-- Escalamiento a 10 000 registros
 
 BEGIN;
-
--- Agrega 9 000 observaciones nuevas sin tocar las 1 000 originales.
--- Los patrones de datos se mantienen comparables entre las distintas escalas.
 INSERT INTO public.observacion (
     id_observacion, fecha, duracion, filtro, metodo,
     nombre_mision, nombre_telescopio, id_estrella
@@ -28,9 +20,6 @@ SELECT
     ((g - 1) % 200) + 1
 FROM generate_series(1001, 10000) AS serie(g)
 ON CONFLICT (id_observacion) DO NOTHING;
-
--- Un evento por observacion, siempre asociado a un exoplaneta
--- perteneciente a la misma estrella. El trigger comprueba esa regla.
 INSERT INTO public.evento_transito (
     id_observacion, nro_evento, fecha_inicio, duracion,
     profundidad, snr, metodo_deteccion, id_exoplaneta
@@ -49,8 +38,6 @@ SELECT
 FROM public.observacion AS o
 WHERE o.id_observacion BETWEEN 1001 AND 10000
 ON CONFLICT (id_observacion, nro_evento) DO NOTHING;
-
--- Si los totales no son correctos, no guardamos una carga incompleta.
 DO $$
 BEGIN
     IF (SELECT count(*) FROM public.observacion) <> 10000 THEN
@@ -70,14 +57,9 @@ BEGIN
     END IF;
 END;
 $$;
-
 COMMIT;
-
--- Actualiza las estadisticas del optimizador de PostgreSQL.
 ANALYZE public.observacion;
 ANALYZE public.evento_transito;
-
--- EVIDENCIA: deben aparecer 3 filas, con 10000, 10000 y 0.
 SELECT 'observaciones' AS comprobacion, count(*)::bigint AS resultado
 FROM public.observacion
 UNION ALL
