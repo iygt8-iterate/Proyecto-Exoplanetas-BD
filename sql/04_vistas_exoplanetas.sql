@@ -1,10 +1,7 @@
--- CS2041 Base de Datos I - Hito 2
--- Etapa 4.4: Views (vistas de usuario)
--- Ejecutar SOLO en exoplanetas_bd, despues de la carga inicial.
--- CREATE OR REPLACE permite volver a ejecutar este archivo sin duplicar vistas.
--- NOTA: estas vistas NO sustituyen las cinco consultas del experimento.
+-- CS2041 | Mapeo y deteccion de exoplanetas
+-- Vistas de usuario
 
--- Vista 1: catalogo de exoplanetas con informacion de la estrella anfitriona.
+-- Vista 1: catalogo de exoplanetas con informacion de la estrella an
 CREATE OR REPLACE VIEW public.vw_catalogo_exoplanetas AS
 SELECT
     p.id_exoplaneta,
@@ -19,7 +16,7 @@ SELECT
 FROM public.exoplaneta AS p
 JOIN public.estrella AS s ON s.id_estrella = p.id_estrella;
 
--- Vista 2: observaciones y sus instrumentos, estrella y mision (opcional).
+-- Vista 2: observaciones y sus instrumentos, estrella y mision (opci
 CREATE OR REPLACE VIEW public.vw_observaciones_detalle AS
 SELECT
     o.id_observacion,
@@ -36,8 +33,7 @@ FROM public.observacion AS o
 JOIN public.telescopio AS t ON t.nombre = o.nombre_telescopio
 JOIN public.estrella AS s ON s.id_estrella = o.id_estrella;
 
--- Vista 3: eventos de transito con sus observaciones, exoplanetas y estrella.
--- Incluye una verificacion explicita de concordancia entre las estrellas.
+-- Vista 3: eventos de transito con sus observaciones, exoplanetas y
 CREATE OR REPLACE VIEW public.vw_eventos_transito_detalle AS
 SELECT
     e.id_observacion,
@@ -59,7 +55,6 @@ JOIN public.observacion AS o ON o.id_observacion = e.id_observacion
 JOIN public.exoplaneta AS p ON p.id_exoplaneta = e.id_exoplaneta
 JOIN public.estrella AS s ON s.id_estrella = o.id_estrella;
 
--- Verificacion: actualmente se esperan 400, 1000 y 1000 filas.
 SELECT 'vw_catalogo_exoplanetas' AS vista, COUNT(*) AS registros
 FROM public.vw_catalogo_exoplanetas
 UNION ALL
