@@ -2,7 +2,7 @@
 -- Triggers de integridad
 
 BEGIN;
--- Trigger 1. verificar insercion o cambio de observacion/exop
+-- Trigger 1. Integridad de eventos
 CREATE OR REPLACE FUNCTION public.fn_validar_evento_estrella()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -33,7 +33,7 @@ BEFORE INSERT OR UPDATE OF id_observacion, id_exoplaneta
 ON public.evento_transito
 FOR EACH ROW
 EXECUTE FUNCTION public.fn_validar_evento_estrella();
--- Trigger 2. impedir cambiar la estrella de una observacion s
+-- Trigger 2. Integridad de observaciones
 CREATE OR REPLACE FUNCTION public.fn_validar_cambio_estrella_observacion()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -60,7 +60,7 @@ ON public.observacion
 FOR EACH ROW
 WHEN (OLD.id_estrella IS DISTINCT FROM NEW.id_estrella)
 EXECUTE FUNCTION public.fn_validar_cambio_estrella_observacion();
--- Trigger 3. impedir cambiar la estrella anfitriona de un exo
+-- Trigger 3. Integridad de exoplanetas
 CREATE OR REPLACE FUNCTION public.fn_validar_cambio_estrella_exoplaneta()
 RETURNS TRIGGER
 LANGUAGE plpgsql
