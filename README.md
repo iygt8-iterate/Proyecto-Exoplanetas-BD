@@ -36,13 +36,18 @@ El modelo incluye ocho tablas relacionales, restricciones de integridad, tres vi
 | `12_experimento_10k_exoplanetas.sql` | Medición de 10 000 |
 | `13_escalar_a_1M_exoplanetas.sql` | Escalamiento a 1 000 000 |
 | `14_experimento_1M_exoplanetas.sql` | Medición de 1 000 000 |
-| `15_verificacion_visual_1M_exoplanetas.sql` | Verificación comparativa de planes en 1M |
+| `15_verificacion_visual_1M_exoplanetas.sql` | Resumen de las cinco consultas en 1M |
+| `15_Q1_verificacion_1M_exoplanetas.sql` | Demostración Q1 sin y con índices |
+| `15_Q2_verificacion_1M_exoplanetas.sql` | Demostración Q2 sin y con índices |
+| `15_Q3_verificacion_1M_exoplanetas.sql` | Demostración Q3 sin y con índices |
+| `15_Q4_verificacion_1M_exoplanetas.sql` | Demostración Q4 sin y con índices |
+| `15_Q5_verificacion_1M_exoplanetas.sql` | Demostración Q5 sin y con índices |
 
 ## Experimentación
 
 Se consideran cuatro escalas: 1 000, 10 000, 100 000 y 1 000 000 registros en **cada una** de las tablas `observacion` y `evento_transito`. La comparación evalúa cinco consultas con y sin índices secundarios candidatos, conservando los índices estructurales de las claves primarias.
 
-Los scripts de medición emplean `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` y registran los tiempos y planes en `public.resultados_hito2`. El script 15 documenta la comparación visual en la escala de 1M mediante una transacción revertida al concluir.
+Los scripts de medición emplean `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` y registran los tiempos y planes en `public.resultados_hito2`. Las cinco variantes del script 15 documentan, individualmente, la comparación visual en la escala de 1M. Cada una utiliza el mismo conjunto de índices candidatos que la medición automática y revierte la transacción al concluir.
 
 Los datos de prueba son sintéticos y no corresponden a un catálogo observacional real.
 
