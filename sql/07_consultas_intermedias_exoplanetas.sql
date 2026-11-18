@@ -16,7 +16,7 @@ WHERE o.id_estrella BETWEEN 10 AND 30
   AND o.fecha < DATE '2024-01-01'
 GROUP BY s.id_estrella, s.nombre, s.tipo_espectral
 HAVING COUNT(*) >= 2;
--- Q2. Ranking de telescopios por transitos con SNR y p
+-- Q2. Telescopios y senal
 CREATE OR REPLACE VIEW public.exp_q02_telescopios_senal AS
 SELECT
     t.nombre AS telescopio,
@@ -31,7 +31,7 @@ WHERE e.snr >= 15.5
   AND e.profundidad >= 0.0045
 GROUP BY t.nombre, t.tipo
 HAVING COUNT(*) >= 1;
--- Q3. Actividad de una mision en un periodo concreto.
+-- Q3. Actividad de mision
 CREATE OR REPLACE VIEW public.exp_q03_actividad_mision AS
 SELECT
     m.nombre AS mision,
@@ -47,7 +47,7 @@ WHERE o.nombre_mision = 'Mision-Simulada-01'
   AND o.fecha >= DATE '2022-01-01'
   AND o.fecha < DATE '2024-01-01'
 GROUP BY m.nombre, m.agencia;
--- Q4. Exoplanetas confirmados con transitos profundos 
+-- Q4. Exoplanetas y transitos
 CREATE OR REPLACE VIEW public.exp_q04_planetas_transitos AS
 WITH eventos_seleccionados AS (
     SELECT id_observacion, id_exoplaneta, fecha_inicio, profundidad, snr
@@ -68,7 +68,7 @@ JOIN public.exoplaneta AS p ON p.id_exoplaneta = e.id_exoplaneta
 JOIN public.estrella AS s ON s.id_estrella = p.id_estrella
 WHERE p.estado = 'confirmado'
 GROUP BY p.id_exoplaneta, p.nombre, s.nombre;
--- Q5. Comparar tipos espectrales y telescopios para ev
+-- Q5. Espectro y telescopio
 CREATE OR REPLACE VIEW public.exp_q05_espectro_telescopio AS
 SELECT
     s.tipo_espectral,
