@@ -1,13 +1,7 @@
--- CS2041 Bases de Datos I | Hito 2 | Preparacion del escenario 100K
--- Requisito previo: escenario 10K confirmado y respaldo exoplanetas_10k.backup guardado.
--- RESULTADO: exactamente 100 000 OBSERVACIONES y 100 000 EVENTOS DE TRANSITO.
--- Datos 100% sinteticos, no son datos reales de la NASA.
--- IMPORTANTE: ejecutar UNICAMENTE en la base exoplanetas_bd.
--- No elimina datos previos, no desactiva triggers ni crea indices.
+-- CS2041 | Mapeo y deteccion de exoplanetas
+-- Escalamiento a 100 000 registros
 
 BEGIN;
-
--- Verificar que partimos de la escala correcta ANTES de insertar.
 DO $$
 BEGIN
     IF (SELECT count(*) FROM public.observacion) <> 10000
@@ -16,8 +10,6 @@ BEGIN
     END IF;
 END;
 $$;
-
--- 1) Agregar 90 000 observaciones nuevas, con las mismas distribuciones que la escala 10K.
 INSERT INTO public.observacion (
     id_observacion, fecha, duracion, filtro, metodo,
     nombre_mision, nombre_telescopio, id_estrella
@@ -35,10 +27,6 @@ SELECT
     'Telescopio-Simulado-' || lpad((((g - 1) % 6) + 1)::text, 2, '0'),
     ((g - 1) % 200) + 1
 FROM generate_series(10001, 100000) AS serie(g);
-
--- 2) Agregar un evento por cada nueva observacion.
--- El exoplaneta elegido pertenece siempre a la estrella observada;
--- el trigger de integridad lo valida en cada insercion.
 INSERT INTO public.evento_transito (
     id_observacion, nro_evento, fecha_inicio, duracion,
     profundidad, snr, metodo_deteccion, id_exoplaneta
@@ -56,8 +44,6 @@ SELECT
     o.id_estrella + CASE WHEN o.id_observacion % 3 = 0 THEN 200 ELSE 0 END
 FROM public.observacion AS o
 WHERE o.id_observacion BETWEEN 10001 AND 100000;
-
--- 3) Verificar cantidades y consistencia. Cualquier error revierte la transaccion.
 DO $$
 BEGIN
     IF (SELECT count(*) FROM public.observacion) <> 100000 THEN
@@ -77,14 +63,9 @@ BEGIN
     END IF;
 END;
 $$;
-
 COMMIT;
-
--- Estadisticas necesarias para que el optimizador elija planes razonables.
 ANALYZE public.observacion;
 ANALYZE public.evento_transito;
-
--- Evidencia: deben aparecer 3 filas con 100000, 100000 y 0.
 SELECT 'observaciones' AS comprobacion, count(*)::bigint AS resultado
 FROM public.observacion
 UNION ALL
